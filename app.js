@@ -1,4 +1,4 @@
-// 사람 46개 염색체 세포분열 (체세포분열 & 감수분열) 정밀 교육용 시뮬레이션 엔진
+// 사람 46개 염색체 세포분열 (체세포분열 & 감수분열) 정밀 시각화 시뮬레이션 엔진
 
 // -------------------------------------------------------------
 // HELPER DRAW FUNCTIONS: X자 복제 염색체 vs I자 단일 염색체
@@ -9,17 +9,17 @@ function drawReplicatedChr(x, y, size, color, label = '', angle = 0) {
   const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
   g.setAttribute("transform", `translate(${x}, ${y}) rotate(${angle})`);
 
-  const armW = Math.max(3.5, size * 0.22);
-  const armH = size * 0.45;
-  const strokeW = 2.2;
+  const armW = Math.max(3.2, size * 0.22);
+  const armH = size * 0.42;
+  const strokeW = 1.9;
 
-  // Left Sister Chromatid (Top-left & Bottom-left arm)
+  // Left Sister Chromatid (Top-left & Bottom-left arm = 2 arms)
   const p1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
   p1.setAttribute("d", `M ${-armW} ${-armH} Q ${-armW*0.2} 0 ${-armW} ${armH}`);
   p1.setAttribute("fill", "none"); p1.setAttribute("stroke", color);
   p1.setAttribute("stroke-width", strokeW); p1.setAttribute("stroke-linecap", "round");
 
-  // Right Sister Chromatid (Top-right & Bottom-right arm)
+  // Right Sister Chromatid (Top-right & Bottom-right arm = 2 arms)
   const p2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
   p2.setAttribute("d", `M ${armW} ${-armH} Q ${armW*0.2} 0 ${armW} ${armH}`);
   p2.setAttribute("fill", "none"); p2.setAttribute("stroke", color);
@@ -34,15 +34,15 @@ function drawReplicatedChr(x, y, size, color, label = '', angle = 0) {
   // Centromere Dot
   const centro = document.createElementNS("http://www.w3.org/2000/svg", "circle");
   centro.setAttribute("cx", "0"); centro.setAttribute("cy", "0");
-  centro.setAttribute("r", Math.max(2.2, armW * 0.45)); centro.setAttribute("fill", "#f59e0b");
+  centro.setAttribute("r", Math.max(2.0, armW * 0.45)); centro.setAttribute("fill", "#f59e0b");
 
   g.appendChild(p1); g.appendChild(p2); g.appendChild(mid); g.appendChild(centro);
 
   if (label) {
     const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    text.setAttribute("x", "0"); text.setAttribute("y", `${armH + 11}`);
+    text.setAttribute("x", "0"); text.setAttribute("y", `${armH + 10}`);
     text.setAttribute("text-anchor", "middle"); text.setAttribute("fill", "#94a3b8");
-    text.setAttribute("font-size", "8.5"); text.setAttribute("font-weight", "bold");
+    text.setAttribute("font-size", "8"); text.setAttribute("font-weight", "bold");
     text.textContent = label;
     g.appendChild(text);
   }
@@ -59,7 +59,7 @@ function drawBivalentChr(x, y, size, label = '') {
   const pat = drawReplicatedChr(-gap, 0, size, "#3b82f6", "", 0);
   const mat = drawReplicatedChr(gap, 0, size, "#ec4899", label, 0);
 
-  // Synapsis Lines (접합선)
+  // Synapsis Lines
   const syn1 = document.createElementNS("http://www.w3.org/2000/svg", "line");
   syn1.setAttribute("x1", `${-gap*0.5}`); syn1.setAttribute("y1", `${-size*0.25}`);
   syn1.setAttribute("x2", `${gap*0.5}`); syn1.setAttribute("y2", `${-size*0.25}`);
@@ -79,17 +79,17 @@ function drawSingleChr(x, y, size, color, angle = 0, label = '') {
   const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
   g.setAttribute("transform", `translate(${x}, ${y}) rotate(${angle})`);
 
-  const armW = Math.max(2.5, size * 0.18);
-  const armH = size * 0.45;
+  const armW = Math.max(2.2, size * 0.18);
+  const armH = size * 0.42;
 
   const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
   path.setAttribute("d", `M 0 ${-armH} Q ${armW} 0 0 ${armH}`);
   path.setAttribute("fill", "none"); path.setAttribute("stroke", color);
-  path.setAttribute("stroke-width", "2.2"); path.setAttribute("stroke-linecap", "round");
+  path.setAttribute("stroke-width", "2.0"); path.setAttribute("stroke-linecap", "round");
 
   const centro = document.createElementNS("http://www.w3.org/2000/svg", "circle");
   centro.setAttribute("cx", "0"); centro.setAttribute("cy", "0");
-  centro.setAttribute("r", "2.0"); centro.setAttribute("fill", "#f59e0b");
+  centro.setAttribute("r", "1.8"); centro.setAttribute("fill", "#f59e0b");
 
   g.appendChild(path); g.appendChild(centro);
 
@@ -106,13 +106,13 @@ function drawSingleChr(x, y, size, color, angle = 0, label = '') {
 }
 
 // -------------------------------------------------------------
-// DATA DEFINITIONS (MITOSIS vs MEIOSIS)
+// DATA DEFINITIONS
 // -------------------------------------------------------------
 
 const mitosisPhases = [
   {
     id: 0,
-    title: "0. 간기 (S기 복제 완료 - 염색사 상태)",
+    title: "0. 간기 (S기 복제 완료 - 실 모양 염색사)",
     short: "간기 (염색사 복제)",
     badge: "염색사 46가닥 복제",
     ploidy: "2n = 46",
@@ -122,14 +122,14 @@ const mitosisPhases = [
     dnaPct: "100%",
     desc: "<strong>[간기]</strong> 뚜렷한 핵막 내부에서 <strong>실처럼 풀어진 염색사 상태</strong>로 부계 23가닥 + 모계 23가닥 = 총 46개의 유전 물질이 2배로 복제되어 있습니다.",
     keypoints: [
-      { title: "실처럼 풀어진 염색사", text: "전기/중기처럼 X자 모양 염색체가 나타나지 않고 핵막 속에 실타래 형태로 얽혀있습니다.", color: "blue" },
-      { title: "DNA 2배 복제 (2 → 4)", text: "부계 23개, 모계 23개 총 46개 유전 물질이 각각 2배로 복제되었습니다.", color: "purple" }
+      { title: "실처럼 풀어진 염색사", text: "X자 염색체가 나타나지 않고 핵막 속에 실타래 형태로 얽혀있습니다.", color: "blue" },
+      { title: "DNA 2배 복제 (2 → 4)", text: "부계 23개, 모계 23개 총 46개 유전 물질이 복제되었습니다.", color: "purple" }
     ],
     renderCanvas: (svg) => renderInterphaseAll(svg)
   },
   {
     id: 1,
-    title: "1. 체세포분열 전기 (Prophase - X자 복제 염색체 응축)",
+    title: "1. 체세포분열 전기 (Prophase - X자 복제 염색체 46개 응축)",
     short: "전기 (X자 46개 응축)",
     badge: "X자 복제 염색체 46개",
     ploidy: "2n = 46",
@@ -137,7 +137,7 @@ const mitosisPhases = [
     chromatids: "92개 (분체 2개/개)",
     dna: "4",
     dnaPct: "100%",
-    desc: "<strong>[전기]</strong> 핵막이 소실되며 풀려있던 염색사가 <strong>자매 염색분체 2개(팔 4개)를 가진 X자 모양 복제 염색체 46개</strong>로 응축합니다.",
+    desc: "<strong>[전기]</strong> 핵막이 소실되며 풀려있던 염색사가 <strong>자매 염색분체 2개(팔 4개)를 가진 X자 모양 복제 염색체 46개</strong>로 응축합니다. 부계 23개(1~23번 파란색)와 모계 23개(1~23번 분홍색) 숫자를 카운트할 수 있습니다.",
     keypoints: [
       { title: "★ X자 복제 염색체 46개", text: "염색체 1개당 자매 염색분체 2개(팔 4개)로 구성된 X자 염색체 46개(부계 23+모계 23)가 뚜렷이 나타납니다.", color: "emerald" },
       { title: "상동 접합 없음", text: "감수분열과 달리 체세포분열 전기에는 2가 염색체가 형성되지 않고 46개가 독립적으로 존재합니다.", color: "blue" }
@@ -146,17 +146,17 @@ const mitosisPhases = [
   },
   {
     id: 2,
-    title: "2. 체세포분열 중기 (Metaphase - X자 46개 1줄 배열)",
-    short: "중기 (X자 46개 1줄 배열)",
-    badge: "X자 46개 적도판 1줄",
+    title: "2. 체세포분열 중기 (Metaphase - X자 46개 정렬)",
+    short: "중기 (X자 46개 정렬)",
+    badge: "X자 46개 적도판 정렬",
     ploidy: "2n = 46",
     chromosomes: "46개",
     chromatids: "92개",
     dna: "4",
     dnaPct: "100%",
-    desc: "<strong>[중기] X자 모양 복제 염색체 46개 전체가 적도판 중앙에 정확히 1줄로 나란히 배열</strong>됩니다.",
+    desc: "<strong>[중기] X자 모양 복제 염색체 46개 전체가 적도판 중앙에 정렬</strong>합니다. 46개 개별 염색체가 겹치지 않고 또렷하게 구분되어 배치됩니다.",
     keypoints: [
-      { title: "★ 핵심: X자 46개 일렬 배열", text: "46개의 X자 복제 염색체 전체가 적도판 중앙에 1줄로 정렬합니다.", color: "amber" }
+      { title: "★ 핵심: X자 46개 일렬 배열", text: "46개의 X자 복제 염색체가 중앙 적도판에 나란히 정렬합니다.", color: "amber" }
     ],
     renderCanvas: (svg) => renderMitosisMetaphaseAll(svg)
   },
@@ -172,7 +172,7 @@ const mitosisPhases = [
     dnaPct: "100%",
     desc: "<strong>[후기]</strong> 각 X자 염색체의 동원체가 갈라지면서 <strong>자매 염색분체가 분리되어 단일 염색체(I자 모양) 46개씩</strong> 양 극으로 이동합니다.",
     keypoints: [
-      { title: "★ X자 → I자 단일 염색체 분리", text: "자매 염색분체가 분리되어 각 극으로 모세포와 동일한 I자 모양 염색체 46개가 끌려갑니다.", color: "emerald" }
+      { title: "★ X자 → I자 단일 염색체 분리", text: "자매 염색분체가 분리되어 왼쪽/오른쪽 양 극으로 각각 모세포와 동일한 I자 모양 염색체 46개가 끌려갑니다.", color: "emerald" }
     ],
     renderCanvas: (svg) => renderMitosisAnaphaseAll(svg)
   },
@@ -186,7 +186,7 @@ const mitosisPhases = [
     chromatids: "46개 (단일)",
     dna: "2",
     dnaPct: "50%",
-    desc: "<strong>[말기]</strong> 세포질 분열이 끝나고 <strong>모세포(2n=46)와 100% 동일하게 46개의 단일 염색체(이후 염색사로 풀어짐)를 가진 딸세포 2개</strong>가 완성됩니다.",
+    desc: "<strong>[말기]</strong> 세포질 분열이 완료되어 <strong>모세포(2n=46)와 100% 동일하게 46개의 단일 염색체(이후 염색사로 풀어짐)를 가진 딸세포 2개</strong>가 형성됩니다.",
     keypoints: [
       { title: "★ 딸세포 2개 완성 (2n=46)", text: "각 딸세포는 46개의 염색체를 보유하여 모세포와 유전 정보가 완전히 동일합니다.", color: "emerald" }
     ],
@@ -197,7 +197,7 @@ const mitosisPhases = [
 const meiosisPhases = [
   {
     id: 0,
-    title: "0. 간기 (S기 복제 완료 - 염색사 상태)",
+    title: "0. 간기 (S기 복제 완료 - 실 모양 염색사)",
     short: "간기 (염색사 복제)",
     badge: "염색사 46가닥 복제",
     ploidy: "2n = 46",
@@ -495,7 +495,7 @@ function updateStageUI() {
 }
 
 // -------------------------------------------------------------
-// STAGE RENDERERS
+// STAGE RENDERERS (NEAT MULTI-COLUMN LAYOUTS FOR 46 CHROMOSOMES)
 // -------------------------------------------------------------
 
 function renderInterphaseAll(svg) {
@@ -567,6 +567,7 @@ function renderMitosisProphaseAll(svg) {
   svg.appendChild(title);
 }
 
+// MITOSIS METAPHASE: 2 neat parallel columns along equator (23 left, 23 right)
 function renderMitosisMetaphaseAll(svg) {
   const cell = document.createElementNS("http://www.w3.org/2000/svg", "circle");
   cell.setAttribute("cx", "300"); cell.setAttribute("cy", "225"); cell.setAttribute("r", "190");
@@ -578,32 +579,47 @@ function renderMitosisMetaphaseAll(svg) {
   eq.setAttribute("stroke", "#334155"); eq.setAttribute("stroke-width", "2"); eq.setAttribute("stroke-dasharray", "4,4");
   svg.appendChild(eq);
 
-  for (let i = 0; i < 46; i++) {
-    const y = 50 + i * 7.8;
-    const sz = Math.max(9, 16 - (i % 23) * 0.3);
-    const color = (i % 2 === 0) ? "#3b82f6" : "#ec4899";
-    svg.appendChild(drawReplicatedChr(300, y, sz, color, "", 90));
+  // Column 1: Paternal 23 (left side of equator)
+  for (let i = 0; i < 23; i++) {
+    const y = 65 + i * 14.5;
+    const sz = Math.max(10, 18 - i * 0.3);
+    svg.appendChild(drawReplicatedChr(282, y, sz, "#3b82f6", "", 90));
+  }
+  // Column 2: Maternal 23 (right side of equator)
+  for (let i = 0; i < 23; i++) {
+    const y = 65 + i * 14.5;
+    const sz = Math.max(10, 18 - i * 0.3);
+    svg.appendChild(drawReplicatedChr(318, y, sz, "#ec4899", "", 90));
   }
 
   const title = document.createElementNS("http://www.w3.org/2000/svg", "text");
   title.setAttribute("x", "300"); title.setAttribute("y", "30"); title.setAttribute("text-anchor", "middle");
   title.setAttribute("fill", "#f59e0b"); title.setAttribute("font-size", "14"); title.setAttribute("font-weight", "bold");
-  title.textContent = "★ 체세포분열 중기: X자 복제 염색체 46개 전체 적도판 1줄 나란히 정렬!";
+  title.textContent = "★ 체세포분열 중기: X자 복제 염색체 46개 적도판 정렬!";
   svg.appendChild(title);
 }
 
+// MITOSIS ANAPHASE: 2 neat columns moving left (46 I-chromatids) and 2 neat columns moving right (46 I-chromatids)
 function renderMitosisAnaphaseAll(svg) {
   const cell = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
   cell.setAttribute("cx", "300"); cell.setAttribute("cy", "225"); cell.setAttribute("rx", "210"); cell.setAttribute("ry", "180");
   cell.setAttribute("fill", "#0f172a"); cell.setAttribute("stroke", "#10b981"); cell.setAttribute("stroke-width", "3.5");
   svg.appendChild(cell);
 
-  for (let i = 0; i < 46; i++) {
-    const y = 50 + i * 7.8;
-    const sz = Math.max(8, 15 - (i % 23) * 0.3);
-    const color = (i % 2 === 0) ? "#3b82f6" : "#ec4899";
-    svg.appendChild(drawSingleChr(180, y, sz, color, -30));
-    svg.appendChild(drawSingleChr(420, y, sz, color, 30));
+  // Moving Left Pole: 2 columns of 23 single chromatids (46 total)
+  for (let i = 0; i < 23; i++) {
+    const y = 65 + i * 14;
+    const sz = Math.max(9, 16 - i * 0.25);
+    svg.appendChild(drawSingleChr(160, y, sz, "#3b82f6", -25));
+    svg.appendChild(drawSingleChr(200, y, sz, "#ec4899", -25));
+  }
+
+  // Moving Right Pole: 2 columns of 23 single chromatids (46 total)
+  for (let i = 0; i < 23; i++) {
+    const y = 65 + i * 14;
+    const sz = Math.max(9, 16 - i * 0.25);
+    svg.appendChild(drawSingleChr(400, y, sz, "#3b82f6", 25));
+    svg.appendChild(drawSingleChr(440, y, sz, "#ec4899", 25));
   }
 
   const title = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -850,7 +866,7 @@ function renderMeiosisTelophase2All(svg) {
     svg.appendChild(txt);
   });
 
-  const title = document.createElementNS("http://www.w3.org/2000/svg", "text");
+  const title = document.label ? title : document.createElementNS("http://www.w3.org/2000/svg", "text");
   title.setAttribute("x", "300"); title.setAttribute("y", "25"); title.setAttribute("text-anchor", "middle");
   title.setAttribute("fill", "#6ee7b7"); title.setAttribute("font-size", "14"); title.setAttribute("font-weight", "bold");
   title.textContent = "감수분열 완료: I자 단일 염색체 n = 23개를 가진 생식세포 4개 완성!";
