@@ -3,46 +3,45 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>사람 46개 염색체 감수분열 인터랙티브 시뮬레이터</title>
+  <title>사람 46개 염색체 세포분열 (체세포분열 & 감수분열) 시뮬레이터</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap');
-    body {
-      font-family: 'Pretendard', sans-serif;
-    }
-    .phase-active {
-      border-color: #3b82f6 !important;
-      background-color: rgba(59, 130, 246, 0.15) !important;
-      box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+    body { font-family: 'Pretendard', sans-serif; }
+    .tab-active {
+      background-color: #2563eb !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 15px rgba(37, 99, 235, 0.4);
     }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-blue-500 selection:text-white">
 
   <!-- Header Navbar -->
-  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50 px-6 py-3.5 flex items-center justify-between">
+  <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-50 px-6 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-4">
     <div class="flex items-center gap-3">
       <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-500 to-pink-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
         <i class="fa-solid fa-dna text-white text-lg"></i>
       </div>
       <div>
         <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
-          사람 감수분열 인터랙티브 가이드 & 시뮬레이터
-          <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 font-mono">2n=46 → n=23</span>
+          사람 세포분열 통합 시뮬레이터
+          <span class="text-xs px-2.5 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20 font-mono">사람 46개 염색체 전체 표기</span>
         </h1>
-        <p class="text-xs text-slate-400">사람 염색체 46개(23쌍)의 제1분열 및 제2분열 정밀 시각화</p>
+        <p class="text-xs text-slate-400">체세포분열 (2n→2n) vs 감수분열 (2n→n) 비교 및 46개 염색체 추적</p>
       </div>
     </div>
     
-    <div class="flex items-center gap-3">
-      <button id="toggle-quiz-btn" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-2">
-        <i class="fa-solid fa-graduation-cap text-amber-400"></i>
-        <span>퀴즈 모드</span>
+    <!-- Top Mode Tab Switcher (Mitosis vs Meiosis) -->
+    <div class="flex items-center gap-2 bg-slate-950 p-1.5 rounded-2xl border border-slate-800">
+      <button id="tab-mitosis" class="px-5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 text-slate-400 hover:text-white">
+        <i class="fa-solid fa-circle-nodes text-emerald-400"></i>
+        <span>체세포분열 (Mitosis)</span>
       </button>
-      <button id="reset-sim-btn" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white shadow-md shadow-blue-600/30 transition flex items-center gap-2">
-        <i class="fa-solid fa-rotate-right"></i>
-        <span>시뮬레이션 리셋</span>
+      <button id="tab-meiosis" class="px-5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 text-slate-400 hover:text-white tab-active">
+        <i class="fa-solid fa-code-fork text-purple-400"></i>
+        <span>감수분열 (Meiosis)</span>
       </button>
     </div>
   </header>
@@ -50,14 +49,14 @@
   <!-- Main Grid Layout -->
   <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-    <!-- Left Column: Stage Controller & Navigation (3 cols) -->
+    <!-- Left Column: Stage Controller (3 cols) -->
     <div class="lg:col-span-3 flex flex-col gap-4">
       
-      <!-- Control Box -->
+      <!-- Stage Box -->
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
         <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center justify-between">
           <span><i class="fa-solid fa-sliders text-blue-400 mr-1.5"></i> 분열 단계 선택</span>
-          <span id="stage-badge" class="text-[10px] px-2 py-0.5 rounded bg-blue-900/50 text-blue-300 font-mono">STEP 1/8</span>
+          <span id="stage-badge" class="text-[10px] px-2 py-0.5 rounded bg-blue-900/50 text-blue-300 font-mono">STEP 1/5</span>
         </h2>
 
         <!-- Step List -->
@@ -83,7 +82,7 @@
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl space-y-3">
         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
           <i class="fa-solid fa-chart-simple text-purple-400"></i>
-          수량 변화 트래커 (사람 46개 기준)
+          수량 변화 트래커 (46개 기준)
         </h3>
 
         <div class="space-y-2">
@@ -113,43 +112,42 @@
 
     </div>
 
-    <!-- Center Column: SVG Canvas Visualizer (6 cols) -->
+    <!-- Center Column: SVG Canvas (6 cols) -->
     <div class="lg:col-span-6 flex flex-col gap-4">
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl flex-1 flex flex-col min-h-[480px] relative">
         
-        <!-- Legend & Mode Toggle -->
+        <!-- Legend Bar -->
         <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
           <div class="flex items-center gap-4 text-xs">
             <span class="flex items-center gap-1.5 text-blue-400 font-medium">
-              <span class="w-3 h-3 rounded-full bg-blue-500 inline-block shadow-sm shadow-blue-500/50"></span> 부계 염색체 (Paternal)
+              <span class="w-3 h-3 rounded-full bg-blue-500 inline-block shadow-sm shadow-blue-500/50"></span> 부계 23개 (Paternal)
             </span>
             <span class="flex items-center gap-1.5 text-pink-400 font-medium">
-              <span class="w-3 h-3 rounded-full bg-pink-500 inline-block shadow-sm shadow-pink-500/50"></span> 모계 염색체 (Maternal)
+              <span class="w-3 h-3 rounded-full bg-pink-500 inline-block shadow-sm shadow-pink-500/50"></span> 모계 23개 (Maternal)
             </span>
           </div>
           
-          <button id="crossing-over-toggle" class="text-xs px-3 py-1 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/30 hover:bg-amber-500/20 transition flex items-center gap-1.5">
-            <i class="fa-solid fa-shuffle"></i>
-            <span>유전자 교차 효과: <strong id="crossing-status">ON</strong></span>
-          </button>
+          <span id="mode-indicator" class="text-xs font-mono px-3 py-1 rounded-lg bg-blue-950 text-blue-300 border border-blue-500/30">
+            분열 방식: 감수분열
+          </span>
         </div>
 
-        <!-- SVG Viewport -->
+        <!-- SVG Canvas Viewport -->
         <div class="flex-1 flex items-center justify-center bg-slate-950 rounded-xl border border-slate-800/80 p-4 relative overflow-hidden">
-          <svg id="meiosis-canvas" viewBox="0 0 600 440" class="w-full h-full max-h-[420px]">
-            <!-- SVG content updated by JS -->
+          <svg id="canvas-svg" viewBox="0 0 600 450" class="w-full h-full max-h-[420px]">
+            <!-- Dynamically injected -->
           </svg>
         </div>
 
-        <!-- Quick Summary Bar -->
+        <!-- Stage Summary Banner -->
         <div class="mt-4 p-3.5 bg-slate-950/80 border border-slate-800 rounded-xl text-xs text-slate-300 flex items-start gap-3">
           <div class="w-7 h-7 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20 flex items-center justify-center shrink-0 mt-0.5">
             <i class="fa-solid fa-lightbulb"></i>
           </div>
           <div>
-            <div id="stage-title-text" class="font-bold text-slate-100 text-sm mb-0.5">간기 (S기 복제 완료)</div>
+            <div id="stage-title-text" class="font-bold text-slate-100 text-sm mb-0.5">단계 제목</div>
             <div id="stage-desc-text" class="text-slate-400 leading-relaxed">
-              모세포(2n=46)의 DNA가 2배로 복제되어 염색체 46개, 염색분체 92개가 형성된 상태입니다.
+              설명 텍스트
             </div>
           </div>
         </div>
@@ -157,63 +155,38 @@
       </div>
     </div>
 
-    <!-- Right Column: Educational Breakdown & Key Concepts (3 cols) -->
+    <!-- Right Column: Dynamic Stage Keypoint & Concept (3 cols) -->
     <div class="lg:col-span-3 flex flex-col gap-4">
       
-      <!-- Key Insights Card -->
+      <!-- Key Summary Card (Updated according to selected stage) -->
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
         <h3 class="text-sm font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-3">
           <i class="fa-solid fa-book-bookmark text-amber-400"></i>
-          핵심 정리
+          <span id="keypoint-header">단계별 핵심 정리</span>
         </h3>
 
-        <div class="space-y-3 text-xs">
-          <div class="p-3 rounded-xl bg-blue-950/30 border border-blue-500/20 space-y-1">
-            <strong class="text-blue-300 font-semibold flex items-center gap-1.5">
-              <i class="fa-solid fa-circle-1 text-[10px]"></i> 제1분열: 상동염색체 분리
-            </strong>
-            <p class="text-slate-300 leading-relaxed">
-              전기 I에 상동염색체가 접합하여 <span class="text-amber-300 font-semibold">2가 염색체(23쌍)</span>를 형성하고, 후기 I에 상동염색체가 나뉘어 <strong class="text-blue-400">2n → n (23개)</strong>으로 반감됩니다.
-            </p>
-          </div>
-
-          <div class="p-3 rounded-xl bg-purple-950/30 border border-purple-500/20 space-y-1">
-            <strong class="text-purple-300 font-semibold flex items-center gap-1.5">
-              <i class="fa-solid fa-circle-2 text-[10px]"></i> 제2분열: 염색분체 분리
-            </strong>
-            <p class="text-slate-300 leading-relaxed">
-              간기 없이 곧바로 진행되며, 후기 II에 <span class="text-purple-300 font-semibold">염색분체</span>가 분리되므로 핵상은 <strong class="text-purple-400">n → n (23개)</strong> 그대로 유지됩니다.
-            </p>
-          </div>
-
-          <div class="p-3 rounded-xl bg-emerald-950/30 border border-emerald-500/20 space-y-1">
-            <strong class="text-emerald-300 font-semibold flex items-center gap-1.5">
-              <i class="fa-solid fa-seedling text-[10px]"></i> 생물학적 의의
-            </strong>
-            <p class="text-slate-300 leading-relaxed">
-              정자(n=23) + 난자(n=23) = 수정란(2n=46)으로 세대를 거듭해도 염색체 수가 유지되며, 교차 및 무작위 배열로 무한한 유전적 다양성을 제공합니다.
-            </p>
-          </div>
+        <div id="dynamic-keypoint-container" class="space-y-3 text-xs">
+          <!-- Dynamically injected based on active stage -->
         </div>
       </div>
 
       <!-- Human Karyotype Reference -->
       <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl">
         <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
-          <i class="fa-solid fa-dna text-pink-400"></i> 사람 46개 염색체 구성
+          <i class="fa-solid fa-dna text-pink-400"></i> 사람 46개 염색체 기준
         </h4>
         <div class="text-xs text-slate-300 space-y-1.5">
           <div class="flex justify-between border-b border-slate-800 pb-1">
-            <span>상염색체 (Autosomes)</span>
-            <span class="font-mono text-slate-100">44개 (22쌍)</span>
+            <span>체세포 염색체 (2n)</span>
+            <span class="font-mono text-blue-400 font-bold">46개 (23쌍)</span>
           </div>
           <div class="flex justify-between border-b border-slate-800 pb-1">
-            <span>성염색체 (Sex Chromosomes)</span>
-            <span class="font-mono text-slate-100">2개 (XX / XY)</span>
+            <span>체세포 분열 결과</span>
+            <span class="font-mono text-emerald-400 font-bold">딸세포 2개 (각 46개)</span>
           </div>
-          <div class="flex justify-between text-blue-400 font-bold pt-0.5">
-            <span>총 체세포 염색체 수</span>
-            <span class="font-mono">2n = 46개</span>
+          <div class="flex justify-between text-purple-400 font-bold pt-0.5">
+            <span>감수 분열 결과</span>
+            <span class="font-mono">생식세포 4개 (각 23개)</span>
           </div>
         </div>
       </div>
@@ -221,23 +194,6 @@
     </div>
 
   </main>
-
-  <!-- Quiz Modal (Hidden by default) -->
-  <div id="quiz-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h3 class="text-lg font-bold text-white flex items-center gap-2">
-          <i class="fa-solid fa-graduation-cap text-amber-400"></i>
-          감수분열 자가 점검 퀴즈
-        </h3>
-        <button id="close-quiz-btn" class="text-slate-400 hover:text-white text-lg px-2">✕</button>
-      </div>
-
-      <div id="quiz-content" class="space-y-4">
-        <!-- Dynamically injected -->
-      </div>
-    </div>
-  </div>
 
   <script src="app.js"></script>
 </body>
